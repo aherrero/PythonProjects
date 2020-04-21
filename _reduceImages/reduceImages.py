@@ -26,10 +26,10 @@ def reduceImages(name,format_file, nreduce):
     print 'Procesada imagen: ' + name
 
 def interpreteformat(formatimage):
-    
+
     format_search=''
     format_file=''
-    
+
     if(formatimage == 'bmp'):
         format_search = '*.bmp'
         format_file = '.bmp'
@@ -50,7 +50,7 @@ def interpreteformat(formatimage):
     elif(formatimage == 'PNG'):
         format_search = '*.PNG'
         format_file = '.PNG'
-        
+
     elif(formatimage == 'tiff'):
         format_search = '*.tiff'
         format_file = '.tiff'
@@ -65,16 +65,16 @@ def interpreteformat(formatimage):
 
 
 def interprete_compression(number):
-    
+
     correctnumber = False
-    
+
     if(number <= 5 and number > 0):
         correctnumber = True
 
     return correctnumber
 
 def main():
-    
+
     formatimage = raw_input ('Formato de imagen: (bmp, jpg, png, tiff)\n')
 
     format_search,format_file = interpreteformat(formatimage)
@@ -88,7 +88,7 @@ def main():
         sys.exit()
 
     try:
-        nreduce = float(raw_input('Porcentaje de compresion: (0.75,0.50,0.25 ...) o ampliación (1 a 5)\n'))
+        nreduce = float(raw_input('Porcentaje de compresion: (0.75,0.50,0.25 ...) o ampliacion (1 a 5)\n'))
         if(not(interprete_compression(nreduce))):
             print ('Valor fuera de rango')
             sys.exit(0)
@@ -100,9 +100,8 @@ def main():
         reduceImages(names,format_file, nreduce)
 
     print 'Reduccion completa\n'
-    
+
 
 
 if __name__ == "__main__":
     main()
-
