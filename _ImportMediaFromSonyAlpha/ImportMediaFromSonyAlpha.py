@@ -10,12 +10,12 @@ FORMAT_RAW = '.ARW'
 DEBUG_LOG = True
 
 # User Inputs
-folder_name = input ("Enter an Event Name: ")
+event_name = input ("Enter an Event Name: ")
 initial_date_str = input ("Initial Date (Format dd-mm-yyyy). ")
 end_date_str = input ("End Date (Format dd-mm-yyyy). Enter for today's date. ")
 
 # Variables
-input_pictures = 'C:/Users/aleja/Scripts/100MSDCF/'
+input_pictures = 'D:/DCIM/100MSDCF/'    # D:/DCIM/100MSDCF/  # C:/Users/aleja/Scripts/100MSDCF/
 output_default = os.path.expanduser("~") + '/Pictures/' # By default, home directoy + Pictures
 
 def process():
@@ -51,7 +51,14 @@ def process():
 
             # Get datetime once for the folder name
             if not datetime_folder_name:
-                datetime_folder_name = str(file_mod_time.year) + '-' + str(file_mod_time.month) + '-' + str(file_mod_time.day)
+                year = str(file_mod_time.year)
+                month = str(file_mod_time.month)
+                day = str(file_mod_time.day)
+                if file_mod_time.month < 10:
+                    month = '0' + str(file_mod_time.month)
+                if file_mod_time.day < 10:
+                    day = '0' + str(file_mod_time.day)
+                datetime_folder_name = year + '-' + month + '-' + day
 
             # Compare this datetime with input
             if (file_mod_time - initial_date >= timedelta(minutes=0)) and (end_date - file_mod_time >= timedelta(minutes=0)):
@@ -61,14 +68,19 @@ def process():
     
     # Ask user if continue
     user_continue = input (str(len(files_filtered)) + ' files will be copied. Do you want to continue? Yes (Default) / No : ')
-    if 'no' in user_continue.lower():
-        print("Cancel by user")
+    if 'yes' in user_continue.lower() or not user_continue:
+        if DEBUG_LOG:
+            print('Continue.')
+    else:
+        print("Cancel by user.")
         return False
 
     # Output directories with datetime
-    output_pictures = output_default + datetime_folder_name + ' ' + folder_name + '/'
+    folder_name = datetime_folder_name + ' ' + event_name
+    output_pictures = output_default + folder_name + '/'
     output_pictures_jpg = output_pictures + folder_name + '/'
     output_pictures_raw = output_pictures + folder_name + ' ' + 'RAW' + '/'
+    output_pictures_archives = output_default + 'Archives/' + folder_name + '/'
 
     # Mkdir output folder
     if not os.path.isdir(output_default):
@@ -87,8 +99,31 @@ def process():
     # Copy Pictures
     for file in files_filtered:
         file_name_complete = input_pictures + file
-        shutil.copy2(file_name_complete + FORMAT_RAW, output_pictures_raw + file + '_' + filename_suffix_event_name + FORMAT_RAW)
         shutil.copy2(file_name_complete + FORMAT_JPG, output_pictures_jpg + file + '_' + filename_suffix_event_name + FORMAT_JPG)
+        if os.path.isfile(file_name_complete + FORMAT_RAW):
+            shutil.copy2(file_name_complete + FORMAT_RAW, output_pictures_raw + file + '_' + filename_suffix_event_name + FORMAT_RAW)
+        else:
+            print('File RAW not found : ' + file + FORMAT_RAW)
+        
+    
+    # Ask user if move files
+    user_continue = input ('Do you want to remove the files from SD Card? Yes / No : ')
+    if 'yes' in user_continue.lower():
+        # Mkdir Archives folder
+        if os.path.isdir(output_pictures_archives):
+            print(output_pictures_archives + ' : Output folder already exists')
+            return False
+        os.mkdir(output_pictures_archives)
+
+        # Move files
+        for file in files_filtered:
+            file_name_complete = input_pictures + file
+            shutil.move(file_name_complete + FORMAT_JPG, output_pictures_archives + file + FORMAT_JPG)
+            if os.path.isfile(file_name_complete + FORMAT_RAW):
+                shutil.move(file_name_complete + FORMAT_RAW, output_pictures_archives + file + FORMAT_RAW)
+            
+    else:
+        print("Cancel remove from source by the user")
 
     return True
 
