@@ -12,7 +12,7 @@ DEBUG_LOG = True
 # User Inputs
 event_name = input ("Enter an Event Name: ")
 initial_date_str = input ("Initial Date (Format dd-mm-yyyy). ")
-end_date_str = input ("End Date (Format dd-mm-yyyy). Enter for today's date. ")
+end_date_str = input ("End Date (Format dd-mm-yyyy). Enter for today's date. 'n' for up to next event. ")
 
 # Variables
 input_pictures = 'D:/DCIM/100MSDCF/'    # D:/DCIM/100MSDCF/  # C:/Users/aleja/Scripts/100MSDCF/
@@ -32,15 +32,20 @@ def process():
         return False
 
     # Convert data desired
+    next_event = False
     initial_date = datetime.strptime(initial_date_str, '%d-%m-%Y')
     if not end_date_str:
         end_date = datetime.today()
+    elif 'n' in end_date_str.lower():
+        end_date = datetime.today() # Max end date, but won't be use
+        next_event = True
     else:
         end_date = datetime.strptime(end_date_str, '%d-%m-%Y')
 
     # Filter unique name and datetime
     files_filtered = []
     datetime_folder_name = ''
+    first_file_mod_time = ''
     for file in files:
         if FORMAT_JPG in file:
             # file no extension (jpg and arw)
@@ -48,18 +53,23 @@ def process():
             
             # Get File modification datetime
             file_mod_time = datetime.fromtimestamp(os.stat(input_pictures + file).st_mtime)
+            if not first_file_mod_time:
+                first_file_mod_time = file_mod_time
 
-            # Get datetime once for the folder name
+            # Get datetime once for the folder name (From the first file)
             if not datetime_folder_name:
-                year = str(file_mod_time.year)
-                month = str(file_mod_time.month)
-                day = str(file_mod_time.day)
-                if file_mod_time.month < 10:
-                    month = '0' + str(file_mod_time.month)
-                if file_mod_time.day < 10:
-                    day = '0' + str(file_mod_time.day)
-                datetime_folder_name = year + '-' + month + '-' + day
+                datetime_folder_name = file_mod_time.date()
 
+            # Check if end date up to the next event, or end_date defined           ## TODO VERIFY IF WORKING
+            # if next_event:
+            #     if first_file_mod_time.date() is not file_mod_time.date():
+            #         print(first_file_mod_time)
+            #         print(file_mod_time)
+            #         print(first_file_mod_time.date())
+            #         print(file_mod_time.date())
+            #         # Means we are already in the next datetime event, so, break
+            #         break
+            
             # Compare this datetime with input
             if (file_mod_time - initial_date >= timedelta(minutes=0)) and (end_date - file_mod_time >= timedelta(minutes=0)):
                 files_filtered.append(file_noext)
