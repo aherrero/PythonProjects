@@ -58,17 +58,13 @@ def process():
 
             # Get datetime once for the folder name (From the first file)
             if not datetime_folder_name:
-                datetime_folder_name = file_mod_time.date()
+                datetime_folder_name = file_mod_time.date().strftime("%Y-%m-%d")
 
-            # Check if end date up to the next event, or end_date defined           ## TODO VERIFY IF WORKING
-            # if next_event:
-            #     if first_file_mod_time.date() is not file_mod_time.date():
-            #         print(first_file_mod_time)
-            #         print(file_mod_time)
-            #         print(first_file_mod_time.date())
-            #         print(file_mod_time.date())
-            #         # Means we are already in the next datetime event, so, break
-            #         break
+            # Check if end date up to the next event, or end_date defined
+            if next_event:
+                if first_file_mod_time.date() != file_mod_time.date():
+                    # Means we are already in the next datetime event, so, break
+                    break
             
             # Compare this datetime with input
             if (file_mod_time - initial_date >= timedelta(minutes=0)) and (end_date - file_mod_time >= timedelta(minutes=0)):
