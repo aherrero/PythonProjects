@@ -8,13 +8,14 @@ FORMAT_RAW = '.ARW'
 DEBUG_LOG = True
 
 # Variables
-input_pictures = 'C:/Users/aleja/Scripts/100MSDCF/'    # D:/DCIM/100MSDCF/  # C:/Users/aleja/Scripts/100MSDCF/
+input_sd_card = 'D:/'
+input_pictures = input_sd_card + 'DCIM/100MSDCF/'    # D:/DCIM/100MSDCF/  # C:/Users/aleja/Scripts/100MSDCF/
 output_default = os.path.expanduser("~") + '/Pictures/'                             # By default, homedirectoy + Pictures
 output_default_archives = os.path.expanduser("~") + '/Pictures/' + 'Archives/'      # By default, homedirectoy + Pictures + Archives
 
 # var video # TODO
-input_video_mp4 = 'D:/PRIVATE/M4ROOT/CLIP/'
-input_video_mp4_thumb = 'D:/PRIVATE/M4ROOT/THMBNL/'
+input_video_mp4 = input_sd_card + 'PRIVATE/M4ROOT/CLIP/'
+input_video_mp4_thumb = input_sd_card + 'PRIVATE/M4ROOT/THMBNL/'
 
 def userInput():
     # User Inputs
