@@ -1,7 +1,7 @@
 import os       # Needed for OS operations (list files, mkdir...)
 import shutil   # Needed to copy files
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 
 # Constant
@@ -11,8 +11,8 @@ DEBUG_LOG = True
 
 # User Inputs
 event_name = input ("Enter an Event Name: ")
-initial_date_str = input ("Initial Date (Format dd-mm-yyyy). ")
-end_date_str = input ("End Date (Format dd-mm-yyyy). Enter for today's date. 'n' for up to next event. ")
+initial_date_str = input ("Initial Date:\n\t-> dd-mm-yyyy\n\t-> 'f' for first event.\n\t")
+end_date_str = input ("End Date:\n\t-> dd-mm-yyyy \n\t-> 'Enter' for today's date.\n\t-> 'n' for up to next event.\n\t")
 
 # Variables
 input_pictures = 'D:/DCIM/100MSDCF/'    # D:/DCIM/100MSDCF/  # C:/Users/aleja/Scripts/100MSDCF/
@@ -32,12 +32,20 @@ def process():
         return False
 
     # Convert data desired
+    # Initial date
+    first_event = False
+    if 'f' in initial_date_str.lower():
+        initial_date = date.fromisoformat('2000-01-13')  #Min first date, won't be used
+        first_event = True
+    else:
+        initial_date = datetime.strptime(initial_date_str, '%d-%m-%Y')
+
+    # End date
     next_event = False
-    initial_date = datetime.strptime(initial_date_str, '%d-%m-%Y')
     if not end_date_str:
         end_date = datetime.today()
     elif 'n' in end_date_str.lower():
-        end_date = datetime.today() # Max end date, but won't be use
+        end_date = datetime.today() # Max end date, but won't be used
         next_event = True
     else:
         end_date = datetime.strptime(end_date_str, '%d-%m-%Y')
@@ -59,6 +67,10 @@ def process():
             # Get datetime once for the folder name (From the first file)
             if not datetime_folder_name:
                 datetime_folder_name = file_mod_time.date().strftime("%Y-%m-%d")
+            
+            # Check if first event
+            if first_event:
+                initial_date = first_file_mod_time
 
             # Check if end date up to the next event, or end_date defined
             if next_event:
