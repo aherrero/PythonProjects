@@ -40,7 +40,8 @@ def userInput():
         end_date = datetime.today() # Max end date, but won't be used
         next_event = True
     else:
-        end_date = datetime.strptime(end_date_str, '%d-%m-%Y')
+        end_date_str = end_date_str + ' 23:59:59'    # Include the all the pictures for last event
+        end_date = datetime.strptime(end_date_str, '%d-%m-%Y %H:%M:%S')
 
     return event_name, initial_date, end_date, first_event, next_event
 
@@ -80,6 +81,26 @@ def filterMedia(Files, InputMedia, InitialDate, EndDate, FirstEvent, NextEvent):
                     print(file_noext, file_mod_time)
 
     return files_filtered, datetime_folder_name
+
+def showInfo():
+    # Get files from input folder
+    if os.path.isdir(input_pictures):
+        files = os.listdir(input_pictures)
+    if len(files) <= 0:
+        print('No files found in ' + input_pictures)
+        return False
+
+    # Show all the dates in folder
+    print('Found these dates in the folder ' + input_pictures + ' : ')
+    file_mod_time_old = datetime.fromisoformat('2000-01-13')
+    for file in files:
+        if FORMAT_JPG in file:
+            # Get File modification datetime
+            file_mod_time = datetime.fromtimestamp(os.stat(input_pictures + file).st_mtime)
+            if file_mod_time.date() != file_mod_time_old.date():
+                file_mod_time_old = file_mod_time
+                print(file_mod_time.date())
+    return True
 
 def process(EventName, InitialDate, EndDate, FirstEvent, NextEvent):
     # Get files from input folder
@@ -161,12 +182,14 @@ def process(EventName, InitialDate, EndDate, FirstEvent, NextEvent):
     return True
 
 def main():
-    event_name, initial_date, end_date, first_event, next_event = userInput()
-    err = process(event_name, initial_date, end_date, first_event, next_event)
-    if err == False:
-        print('Error!')
-        return False
-    print('Done.')
+    err = showInfo()
+    if err:
+        event_name, initial_date, end_date, first_event, next_event = userInput()
+        err = process(event_name, initial_date, end_date, first_event, next_event)
+        if err == False:
+            print('Error!')
+            return False
+    input('Done. Any key to continue\n')
 
 if __name__ == "__main__":
     main()
