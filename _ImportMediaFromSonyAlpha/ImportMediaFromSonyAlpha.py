@@ -20,13 +20,13 @@ input_video_mp4_thumb = input_sd_card + 'PRIVATE/M4ROOT/THMBNL/'
 def userInput():
     # User Inputs
     event_name = input ("Enter an Event Name: ")
-    initial_date_str = input ("Initial Date:\n\t-> dd-mm-yyyy\n\t-> 'f' for first event.\n\t")
+    initial_date_str = input ("Initial Date:\n\t-> dd-mm-yyyy\n\t-> 'f' or 'Enter' for first event.\n\t")
     end_date_str = input ("End Date:\n\t-> dd-mm-yyyy \n\t-> 'Enter' for today's date.\n\t-> 'n' for up to next event.\n\t")
 
     # Convert data desired
     # Initial date
     first_event = False
-    if 'f' in initial_date_str.lower():
+    if not initial_date_str or 'f' in initial_date_str.lower():
         initial_date = date.fromisoformat('2000-01-13')  #Min first date, won't be used
         first_event = True
     else:
